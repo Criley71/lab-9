@@ -37,12 +37,12 @@
   * after a client joins a chat room, if EOF on fgets() then close the input buffer.
     close the output buffer if the chat room thread is not trying to write to it.
     remove the client from the chat room list and kill the client thread
-  
+
   * if the chat room thread detects a problem on fputs() or fflush() then remove the client from room list
     close the output buffer.
     client should be dealt with automatically sonce EOF on fgets()
 
-    
+
     1-5: 2 to 10 clients joining and exiting.
     6-10: 2 clients, one room, one line of text.
     11-15: 3 to 12 clients, one room, one line of text.
@@ -51,7 +51,7 @@
     26-30: 3 to 12 clients, one room, one line of text per client.
     31-35: 3 to 12 clients, two rooms, one line of text per client.
     36-40: 3 to 12 clients, three rooms, one line of text per client.
-    41-100: 4 to 24 clients, four to ten rooms, 30 to 259 lines of text. 
+    41-100: 4 to 24 clients, four to ten rooms, 30 to 259 lines of text.
 
 
 when a client connects:
@@ -59,7 +59,7 @@ when a client connects:
   2. the format is:
               room_1_name: 1st_person_to_join, 2nd_person_to_join, ...
               room_2_name: (even if no one is in still print this)
-              room_3_name: 1st_person_to_join 
+              room_3_name: 1st_person_to_join
   3. then prompt user for their name then the chat room
   4. error check the input including EOF
   5. when someone joins a line is sent to everyone in the chat room that the person has joined
@@ -77,12 +77,33 @@ when a client connects:
               Goofus has joined
 */
 /*TODO
-  1. make singly-linked list node struct
+  1. make linked list node struct
   2. Chat room struct- name, node->head, node->tail, node->output, mutex user_list_lock, mutex output_list_lock, thread_cond output_cond
-  3. client struct- file descriptors, struct chat_room, 
+  3. client struct- file descriptors, struct chat_room, num of rooms in
 */
 
+struct list_node {
+  char *str;               // data
+  FILE *fout;              // file stream
+  struct list_node *flink; // front link
+  struct list_node *blink; // back link
+};
 
+struct chat_room {
+  char *room_name;               // room name
+  struct list_node *client_head; // client list head
+  struct list_node *client_tail; // client list tail
+  struct list_node *output_head; // output list head
+  pthread_mutex_t client_lock;   // client list mutex lock
+  pthread_mutex_t output_lock;   // output list mutex lock
+  pthread_cond_t output_cond;    // output conditional
+};
+
+struct client {
+  int num_rooms_in;        // num of rooms client is a part of
+  int fd;                  // file descriptors
+  struct chat_room *rooms; // chat rooms client is in
+};
 
 int main() {
 }
