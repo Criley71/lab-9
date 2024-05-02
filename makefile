@@ -1,6 +1,6 @@
 CC = gcc 
 INCLUDES = -Iinclude
-CFLAGS = -g -pthread -no-pie $(INCLUDES)
+CFLAGS = -g -pthread -no-pie -ggdb3 $(INCLUDES)
 LIBDIR = obj
 LIBS = $(LIBDIR)/libfdr.a $(LIBDIR)/sockettome.o
 EXECUTABLES = chat_server
